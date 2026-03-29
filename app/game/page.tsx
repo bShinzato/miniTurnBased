@@ -20,6 +20,29 @@ export default function GamePage() {
      return Math.floor(Math.random() * 30) + 1
   }
 
+  function randomPlayerAttackNum(): number {
+    return Math.floor(Math.random() * 7) + 1
+  }
+
+    function randomEnemyAttackNum(): number {
+    return Math.floor(Math.random() * 5) + 1
+  }
+
+  function attackTarget() {
+    const damage = randomPlayerAttackNum()
+    const newEnemyHp = enemyHp - damage
+    if (newEnemyHp < 0) {
+      setEnemyHp(0)
+    } else {
+      setEnemyHp(newEnemyHp)
+    }
+  }
+
+  function attackTargetPlayer() {
+    const damage = randomEnemyAttackNum()
+    const newPlayerHp = playerHp - damage
+    setPlayerHp(newPlayerHp)
+  }
 
 
   if (gameStep === 'nameRender') {
@@ -51,7 +74,7 @@ export default function GamePage() {
             () => {
               setGameStep('Battle')
               setEnemyName(randomName())
-              setEnemyHp(randomEnemyHp)
+              setEnemyHp(randomEnemyHp())
             }
           }>
             Forest
@@ -61,9 +84,23 @@ export default function GamePage() {
   }
 
   if (gameStep === 'Battle') {
+    
     return (
       <main>
-        <h1>{enemyName} has appeared. {enemyName} has {enemyHp} Hit Points.</h1>
+        <h1>
+          {enemyHp > 0
+          ? 
+          `${enemyName} has appear. ${enemyName} has ${enemyHp} Hit Points.`
+          : `${enemyName} has 0 Hit Points. ${playerName} has slain ${enemyName}.`}
+        </h1>
+
+        <button
+          onClick = {() => {
+            attackTarget()
+          }}>
+            Attack!
+        </button>
+
       </main>
     )
   }

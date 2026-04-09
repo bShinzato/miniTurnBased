@@ -46,18 +46,25 @@ export default function GamePage() {
 
   if (gameStep === "nameRender") {
     return (
-      <main>
-        <h1>Enter your Heroes Name</h1>
+      <main className="flex flex-col items-center justify-center h-screen">
+        <h1 className="text-xl font-bold mb-2 p-2  animate-pulse">Enter your Heroes Name</h1>
         <input
           type="text"
           value={playerNameInput}
           onChange={(e) => setPlayerNameInput(e.target.value)}
-          placeholder="Enter your Heroes Name"
+          placeholder="Enter Hero Name"
+          className="text-center mb-3 p-2 border rounded"
         />
         <button
+          className="mt-6 bg-blue-500 text-white px-5 py-3 rounded hover:bg-blue-600 hover:scale-105 hover:animate-bounce transition-duration-5000 hover:cursor-pointer"
           onClick={() => {
             setPlayerName(playerNameInput);
             setGameStep("Town");
+            if (playerNameInput.trim() === "") {
+              alert("Please enter a valid name.");
+              setPlayerName("");
+              setGameStep("nameRender");
+            }
           }}
         >
           Continue

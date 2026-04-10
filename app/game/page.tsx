@@ -13,6 +13,7 @@ export default function GamePage() {
   const [playerHp, setPlayerHp] = useState(30);
   const [enemyName, setEnemyName] = useState("");
   const [enemyHp, setEnemyHp] = useState(0);
+  const [killCounter, setKillCounter] = useState(0);
 
   function randomName(): string {
     const arrNames = ["Troll", "Gremlin", "Chunkie", "Doise"];
@@ -63,16 +64,11 @@ export default function GamePage() {
     if (newEnemyHp <= 0) {
       setEnemyHp(0);
       setPlayerCoins((prevCoins): number => prevCoins + coinsToNames());
+      setKillCounter((prev) => prev + 1);
     } else {
       setEnemyHp(newEnemyHp);
       attackPlayer();
     }
-  }
-
-  function attackTargetPlayer() {
-    const damage = randomEnemyAttackNum();
-    const newPlayerHp = playerHp - damage;
-    setPlayerHp(newPlayerHp);
   }
 
   if (gameStep === "nameRender") {
@@ -115,6 +111,7 @@ export default function GamePage() {
         <p>
           <li>You have {playerHp} Hit Points</li>
           <li>{playerCoins} coins available</li>
+          <li>Slain {killCounter} monsters</li>
         </p>
         <button
           className="mt-6 bg-blue-500 text-white px-5 py-3 rounded hover:bg-blue-600 hover:scale-105 hover:animate-bounce transition-duration-5000 hover:cursor-pointer"
@@ -178,11 +175,25 @@ export default function GamePage() {
   if (gameStep === "Battle") {
     return (
       <main className="flex flex-col items-center justify-center h-screen">
-        <h1 className="text-xl font-bold mb-2 p-2  animate-pulse">
+        <h1 className="font-bold mb-2 p-2  animate-pulse">
           {enemyHp > 0
-            ? `${enemyName} has appear. ${enemyName} has ${enemyHp} Hit Points. ${playerName} has ${playerHp} Hit Points.`
-            : `${enemyName} has 0 Hit Points. ${playerName} has slain ${enemyName} and received ${coinsToNames()} coins. ${playerName} has ${playerCoins} coins!`}
+            ? `${enemyName} has appear. `
+            : 
+            `${enemyName} has 0 Hit Points. 
+            ${playerName} has slain ${enemyName} and received ${coinsToNames()} coins. 
+            ${playerName} has ${playerCoins} coins!`}
         </h1>
+        <div className="flex justify-between items-center w-full max-w-4xl px-8 mb-8">
+          <div className ="text-left">
+            <h2 className="text-2xl font-bold">{playerName}</h2>
+            <p>{playerHp} Hit Points</p>
+          </div>
+        <div className="text-right">
+          <h2 className="text-2xl font-bold"> {enemyName}</h2>
+          <p>{enemyHp} Hit Points</p>
+        </div>
+        </div>
+
 
         {enemyHp > 0 ? (
           <button
@@ -223,7 +234,7 @@ export default function GamePage() {
     return (
       <main className="flex flex-col items-center justify-center h-screen">
         <h1 className="text-xl font-bold mb-2 p-2  animate-pulse">
-          Game Over, {playerName}.
+          Game Over, {playerName}. You have slain {killCounter} monsters.
         </h1>
         <button
           className="mt-6 bg-blue-500 text-white px-5 py-3 rounded hover:bg-blue-600 hover:scale-105 hover:animate-bounce transition-duration-5000 hover:cursor-pointer"

@@ -38,6 +38,17 @@ export default function GamePage() {
     }
   }
 
+  function attackPlayer() {
+    const damage = randomEnemyAttackNum();
+    const newPlayerHp = playerHp - damage;
+    if (newPlayerHp < 0) {
+      setPlayerHp(0);
+      setGameStep("GameOver");
+    } else {
+      setPlayerHp(newPlayerHp);
+    }
+  }
+
   function attackTargetPlayer() {
     const damage = randomEnemyAttackNum();
     const newPlayerHp = playerHp - damage;
@@ -75,9 +86,10 @@ export default function GamePage() {
 
   if (gameStep === "Town") {
     return (
-      <main>
-        <h1>Welcome to Town, {playerName}.</h1>
+      <main className="flex flex-col items-center justify-center h-screen">
+        <h1 className="text-xl font-bold mb-2 p-2  animate-pulse">Welcome to Town, {playerName}.</h1>
         <button
+        className="mt-6 bg-blue-500 text-white px-5 py-3 rounded hover:bg-blue-600 hover:scale-105 hover:animate-bounce transition-duration-5000 hover:cursor-pointer"
           onClick={() => {
             setGameStep("Battle");
             setEnemyName(randomName());
@@ -92,17 +104,19 @@ export default function GamePage() {
 
   if (gameStep === "Battle") {
     return (
-      <main>
-        <h1>
+      <main className="flex flex-col items-center justify-center h-screen">
+        <h1 className="text-xl font-bold mb-2 p-2  animate-pulse">
           {enemyHp > 0
-            ? `${enemyName} has appear. ${enemyName} has ${enemyHp} Hit Points.`
+            ? `${enemyName} has appear. ${enemyName} has ${enemyHp} Hit Points. ${playerName} has ${playerHp} Hit Points.`
             : `${enemyName} has 0 Hit Points. ${playerName} has slain ${enemyName}.`}
         </h1>
 
         {enemyHp > 0 ? (
           <button
+          className="mt-6 bg-blue-500 text-white px-5 py-3 rounded hover:bg-blue-600 hover:scale-105 hover:animate-bounce transition-duration-5000 hover:cursor-pointer"
             onClick={() => {
               attackTarget();
+              attackPlayer();
             }}
           >
             Attack!
@@ -110,6 +124,7 @@ export default function GamePage() {
         ) : (
           <>
             <button
+            className="mt-6 bg-blue-500 text-white px-5 py-3 rounded hover:bg-blue-600 hover:scale-105 hover:animate-bounce transition-duration-5000 hover:cursor-pointer"
               onClick={() => {
                 setGameStep("Town");
                 setPlayerHp(30);
@@ -118,6 +133,7 @@ export default function GamePage() {
               Return to Town to heal up.
             </button>
             <button
+            className="mt-6 bg-blue-500 text-white px-5 py-3 rounded hover:bg-blue-600 hover:scale-105 hover:animate-bounce transition-duration-5000 hover:cursor-pointer"
               onClick={() => {
                 setGameStep("Battle");
                 setEnemyName(randomName());
@@ -128,6 +144,23 @@ export default function GamePage() {
             </button>
           </>
         )}
+      </main>
+    );
+  }
+
+  if (gameStep === "GameOver") {
+    return (
+      <main className="flex flex-col items-center justify-center h-screen">
+        <h1 className="text-xl font-bold mb-2 p-2  animate-pulse">Game Over, {playerName}.</h1>
+        <button
+        className="mt-6 bg-blue-500 text-white px-5 py-3 rounded hover:bg-blue-600 hover:scale-105 hover:animate-bounce transition-duration-5000 hover:cursor-pointer"
+          onClick={() => {
+            setGameStep("nameRender");
+            setPlayerHp(30);
+          }}
+        >
+          Play Again
+        </button>
       </main>
     );
   }

@@ -7,8 +7,10 @@ export default function GamePage() {
   const [playerCoins, setPlayerCoins] = useState(0);
   const [gameStep, setGameStep] = useState("nameRender");
 
-  const [showPotionModal, setShowPotionModal] = useState(false);
+  const [showShopModal, setShowShopModal] = useState(false);
+  const [selectedShopItem, setSelectedShopItem] = useState("");
   const [showMessage, setShowMessage] = useState("");
+  const [hasWeapon, setHasWeapon] = useState(false);
 
   const [playerHp, setPlayerHp] = useState(30);
   const [enemyName, setEnemyName] = useState("");
@@ -16,7 +18,13 @@ export default function GamePage() {
   const [killCounter, setKillCounter] = useState(0);
 
   function randomName(): string {
-    const arrNames = ["Troll", "Gremlin", "Chunkie", "Doise"];
+    const arrNames = [
+      "Troll",
+      "Gremlin",
+      "Chunkie",
+      "Doise",
+      "Tectonic Plates",
+    ];
     const randomIndex = Math.floor(Math.random() * arrNames.length);
     return arrNames[randomIndex];
   }
@@ -30,6 +38,8 @@ export default function GamePage() {
       return 2;
     } else if (enemyName === "Doise") {
       return 1;
+    } else if (enemyName === "Tectonic Plates") {
+      return 7;
     } else {
       return 0;
     }
@@ -59,7 +69,7 @@ export default function GamePage() {
   }
 
   function attackTarget() {
-    const damage = randomPlayerAttackNum();
+    const damage = randomPlayerAttackNum() + (hasWeapon ? +2 : 0);
     const newEnemyHp = enemyHp - damage;
     if (newEnemyHp <= 0) {
       setEnemyHp(0);
@@ -112,6 +122,9 @@ export default function GamePage() {
           <li>You have {playerHp} Hit Points</li>
           <li>{playerCoins} coins available</li>
           <li>Slain {killCounter} monsters</li>
+          {hasWeapon ? (
+            <li>You have a weapon</li>
+          ): (<li>You do not have a weapon</li>)}
         </p>
         <button
           className="mt-6 bg-blue-500 text-white px-5 py-3 rounded hover:bg-blue-600 hover:scale-105 hover:animate-bounce transition-duration-5000 hover:cursor-pointer"
@@ -123,28 +136,56 @@ export default function GamePage() {
         >
           Forest
         </button>
-        <div>
+        <div className="flex gap-4">
           <button
             className="mt-6 bg-blue-500 text-white px-5 py-3 rounded hover:bg-blue-600 hover:scale-105 hover:animate-bounce transition-duration-5000 hover:cursor-pointer"
             onClick={() => {
-              setShowPotionModal(true);
+              setShowShopModal(true);
+              setSelectedShopItem("Potion");
             }}
           >
             Buy Potion
           </button>
+          <button
+            className="mt-6 bg-blue-500 text-white px-5 py-3 rounded hover:bg-blue-600 hover:scale-105 hover:animate-bounce transition-duration-5000 hover:cursor-pointer"
+            onClick={() => {
+              setShowShopModal(true);
+              setSelectedShopItem("Sword");
+              if (hasWeapon === true) {
+                alert("Already Purchased")
+                setShowShopModal(false);
+              }
+            }}
+          >
+            Buy Sword
+          </button>
         </div>
-        {showPotionModal === true && (
+        {showShopModal === true && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
             <div className="bg-blue-400 p-6 rounded-lg shadow-lg">
-              <p>Buy Potion for 5 coins to restore 10 HP?</p>
-              {showMessage && <p>{showMessage}</p>}
+              {showMessage ? (
+                <p>{showMessage}</p>
+              ) : (
+                <p>
+                  {selectedShopItem === "Potion"
+                    ? "Buy Potion for 5 Coins to recover 10 HP?"
+                    : "Buy Sword for 10 coins to increase damage by 2 points."}
+                </p>
+              )}
+
               <div className="flex justify-center">
                 <button
                   onClick={() => {
-                    if (playerCoins >= 5) {
+                    if (selectedShopItem === "Potion" && playerCoins >= 5) {
                       setPlayerCoins((prev) => prev - 5);
                       setPlayerHp((prev) => prev + 10);
                       setShowMessage(`Purchased Completed.`);
+                    } else if (
+                      selectedShopItem === "Sword" &&
+                      playerCoins >= 10
+                    ) {
+                      setPlayerCoins((prev) => prev - 10);
+                      setHasWeapon(true);
                     } else {
                       setShowMessage(
                         `You Broke NOOB! You only have ${playerCoins} coins!`,
@@ -157,8 +198,8 @@ export default function GamePage() {
                 </button>
                 <button
                   onClick={() => {
-                    setShowPotionModal(false);
-                    setShowMessage("")
+                    setShowShopModal(false);
+                    setShowMessage("");
                   }}
                   className="ml-2 mt-2 bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 hover:scale-105 transition-duration-5000 hover:cursor-pointer ring-1"
                 >
@@ -178,22 +219,20 @@ export default function GamePage() {
         <h1 className="font-bold mb-2 p-2  animate-pulse">
           {enemyHp > 0
             ? `${enemyName} has appear. `
-            : 
-            `${enemyName} has 0 Hit Points. 
+            : `${enemyName} has 0 Hit Points. 
             ${playerName} has slain ${enemyName} and received ${coinsToNames()} coins. 
             ${playerName} has ${playerCoins} coins!`}
         </h1>
         <div className="flex justify-between items-center w-full max-w-4xl px-8 mb-8">
-          <div className ="text-left">
+          <div className="text-left">
             <h2 className="text-2xl font-bold">{playerName}</h2>
             <p>{playerHp} Hit Points</p>
           </div>
-        <div className="text-right">
-          <h2 className="text-2xl font-bold"> {enemyName}</h2>
-          <p>{enemyHp} Hit Points</p>
+          <div className="text-right">
+            <h2 className="text-2xl font-bold"> {enemyName}</h2>
+            <p>{enemyHp} Hit Points</p>
+          </div>
         </div>
-        </div>
-
 
         {enemyHp > 0 ? (
           <button
@@ -242,6 +281,8 @@ export default function GamePage() {
             setGameStep("nameRender");
             setPlayerHp(30);
             setPlayerCoins(0);
+            setKillCounter(0);
+            setHasWeapon(false);
           }}
         >
           Play Again
